@@ -1,0 +1,66 @@
+#!/bin/python3
+
+import math
+import os
+import random
+import re
+import sys
+
+
+
+def cutTheTree(data, edges):
+    n = len(data)
+
+    graph = [[] for _ in range(n)]
+
+    for u, v in edges:
+        u -= 1
+        v -= 1
+        graph[u].append(v)
+        graph[v].append(u)
+
+    parent = [-1] * n
+    order = [0]
+
+    for node in order:
+        for neighbor in graph[node]:
+            if neighbor != parent[node]:
+                parent[neighbor] = node
+                order.append(neighbor)
+
+    total = sum(data)
+
+    subtree = data[:]
+
+    for node in reversed(order):
+        if parent[node] != -1:
+            subtree[parent[node]] += subtree[node]
+
+    answer = float('inf')
+
+    for node in range(1, n):
+        part1 = subtree[node]
+        part2 = total - part1
+
+        difference = abs(part1 - part2)
+
+        answer = min(answer, difference)
+
+    return answer
+if __name__ == '__main__':
+    fptr = open(os.environ['OUTPUT_PATH'], 'w')
+
+    n = int(input().strip())
+
+    data = list(map(int, input().rstrip().split()))
+
+    edges = []
+
+    for _ in range(n - 1):
+        edges.append(list(map(int, input().rstrip().split())))
+
+    result = cutTheTree(data, edges)
+
+    fptr.write(str(result) + '\n')
+
+    fptr.close()
